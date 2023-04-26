@@ -32,6 +32,14 @@ object Parsers:
   extension (str: String)
     def charParser(): Parser[Char] = BasicParser(str.toSet)
 
+  // 2.3
+  trait ShorterThan[T](private var n: Int) extends Parser[T]:
+    abstract override def parse(t: T): Boolean =
+      n = n - 1
+      super.parse(t)
+    abstract override def end: Boolean = n >= 0 && super.end
+
+
 class BasicParser(chars: Set[Char]) extends Parser[Char]:
   override def parse(t: Char): Boolean = chars.contains(t)
   override def end: Boolean = true
