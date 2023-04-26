@@ -25,7 +25,7 @@ class BoardBuilder(width: Int, height: Int):
 
 class SolitaireTest:
 
-  @Test def isSafeTest =
+  @Test def logicMoveTest =
     val center = (2, 3)
     given builder: BoardBuilder = BoardBuilder(5, 7)
     Board()
