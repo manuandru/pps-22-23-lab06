@@ -37,7 +37,13 @@ object ConnectThree extends App:
       y <- firstAvailableRow(board, x)
     yield Disk(x, y, player) +: board
 
-  def computeAnyGame(player: Player, moves: Int): LazyList[Game] = ???
+  def computeAnyGame(player: Player, moves: Int): LazyList[Game] = moves match
+    case 1 => LazyList(placeAnyDisk(Seq(), player))
+    case _ =>
+      for
+        game <- computeAnyGame(player, moves - 1)
+        board <- game
+      yield placeAnyDisk(board, player.other) ++ game
 
   def printBoards(game: Seq[Board]): Unit =
     for
@@ -76,7 +82,7 @@ object ConnectThree extends App:
   // ...O ..XO .X.O X..O
   println("EX 3: ")
 // Exercise 3 (ADVANCED!): implement computeAnyGame such that..
-  computeAnyGame(O, 4).foreach { g =>
+  computeAnyGame(O, 2).foreach { g =>
     printBoards(g)
     println()
   }
