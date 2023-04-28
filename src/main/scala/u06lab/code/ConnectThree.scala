@@ -29,7 +29,7 @@ object ConnectThree extends App:
 
   def find(board: Board, x: Int, y: Int): Option[Player] = board.collectFirst { case Disk(`x`, `y`, p) => p }
 
-  def firstAvailableRow(board: Board, x: Int): Option[Int] = ???
+  def firstAvailableRow(board: Board, x: Int): Option[Int] = Some(board.count(_.x == x)).filter(_ <= bound)
 
   def placeAnyDisk(board: Board, player: Player): Seq[Board] = ???
 
