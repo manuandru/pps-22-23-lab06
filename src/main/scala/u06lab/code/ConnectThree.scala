@@ -5,6 +5,8 @@ import java.util.OptionalInt
 // Optional!
 object ConnectThree extends App:
   val bound = 3
+  val seqForWin = 3
+  val lineCheck = bound - seqForWin + 1
   enum Player:
     case X, O
     def other: Player = this match
@@ -16,10 +18,10 @@ object ConnectThree extends App:
    * Board:
    * y
    *
-   * 3
-   * 2
-   * 1
-   * 0
+   * 3 X X O X
+   * 2 X O X O
+   * 1 O X O X
+   * 0 X O X X
    *   0 1 2 3 <-- x
    */
   type Board = Seq[Disk]
@@ -41,9 +43,34 @@ object ConnectThree extends App:
     case 1 => LazyList(placeAnyDisk(Seq(), player))
     case _ =>
       for
-        game <- computeAnyGame(player, moves - 1)
+        game <- computeAnyGame(player.other, moves - 1)
         board <- game
-      yield placeAnyDisk(board, player.other) ++ game
+        if board.size == moves - 1
+      yield
+        if win(board)
+        then game
+        else placeAnyDisk(board, player) ++ game
+
+
+  def win(board: Board): Boolean =
+    val horizontal: Boolean =
+      (for
+        x <- 0 to bound
+        y <- 0 to lineCheck
+        player <- find(board, x, y)
+        others = (1 until seqForWin).map { i => find(board, x , y + i) }
+      yield others.forall { _.contains(player) }).fold(false)(_ || _)
+
+    val vertical: Boolean =
+      (for
+        x <- 0 to lineCheck
+        y <- 0 to bound
+        player <- find(board, x, y)
+        others = (1 until seqForWin).map { i => find(board, x + i, y) }
+      yield others.forall { _.contains(player) }).fold(false)(_ || _)
+
+    horizontal || vertical
+
 
   def printBoards(game: Seq[Board]): Unit =
     for
