@@ -51,44 +51,19 @@ object ConnectThree extends App:
         then game
         else placeAnyDisk(board, player) ++ game
 
+  def checkRow(board: Board)(xMap: (Int, Int) => Int, yMap: (Int, Int) => Int): Boolean =
+    (for
+      x <- 0 to bound
+      y <- 0 to bound
+      player <- find(board, x, y)
+      others = (1 until seqForWin).map { i => find(board, xMap(x, i), yMap(y, i)) }
+    yield others.forall { _.contains(player) }).exists(x => x)
 
   def win(board: Board): Boolean =
-    val horizontal: Boolean =
-      (for
-        x <- 0 to bound
-        y <- 0 to lineCheck
-        player <- find(board, x, y)
-        others = (1 until seqForWin).map { i => find(board, x , y + i) }
-      yield others.forall { _.contains(player) }).exists(x => x)
-
-    val vertical: Boolean =
-      (for
-        x <- 0 to lineCheck
-        y <- 0 to bound
-        player <- find(board, x, y)
-        others = (1 until seqForWin).map { i => find(board, x + i, y) }
-      yield others.forall { _.contains(player) }).exists(x => x)
-
-    val diagonal: Boolean =
-      (for
-        x <- 0 to bound
-        y <- 0 to bound
-        player <- find(board, x, y)
-        others = (1 until seqForWin).map { i => find(board, x + i, y + i) }
-      yield others.forall {
-        _.contains(player)
-      }).exists(x => x)
-
-    val antiDiagonal: Boolean =
-      (for
-        x <- 0 to bound
-        y <- 0 to bound
-        player <- find(board, x, y)
-        others = (1 until seqForWin).map { i => find(board, x + i, y - i) }
-      yield others.forall {
-        _.contains(player)
-      }).exists(x => x)
-
+    val horizontal: Boolean = checkRow(board)((x, _) => x, _ + _)
+    val vertical: Boolean = checkRow(board)(_ + _, (y, _) => y)
+    val diagonal: Boolean = checkRow(board)(_ + _, _ + _)
+    val antiDiagonal: Boolean = checkRow(board)(_ + _, _ - _)
     horizontal || vertical || diagonal || antiDiagonal
 
   def printBoards(game: Seq[Board]): Unit =
