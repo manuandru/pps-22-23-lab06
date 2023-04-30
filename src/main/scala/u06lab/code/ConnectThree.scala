@@ -6,7 +6,6 @@ import java.util.OptionalInt
 object ConnectThree extends App:
   val bound = 3
   val seqForWin = 3
-  val lineCheck = bound - seqForWin + 1
   enum Player:
     case X, O
     def other: Player = this match
